@@ -10,26 +10,41 @@ public class GrpcTelemetryClientService : BackgroundService
     private readonly ITelemetryAggregator _aggregator;
     private readonly ILogger<GrpcTelemetryClientService> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment _environment;
 
     public GrpcTelemetryClientService(
         ITelemetryAggregator aggregator,
         ILogger<GrpcTelemetryClientService> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IHostEnvironment environment)
     {
         _aggregator = aggregator;
         _logger = logger;
         _configuration = configuration;
+        _environment = environment;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var endpoint = _configuration["Grpc:TelemetryEndpoint"] ?? "https://localhost:7100";
 
+        var httpHandler = new HttpClientHandler();
+        if (_environment.IsDevelopment())
+        {
+            // En desarrollo local (especialmente en Linux), permitir el certificado local de ASP.NET Core
+            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        }
+
+        var channelOptions = new GrpcChannelOptions
+        {
+            HttpHandler = httpHandler
+        };
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                using var channel = GrpcChannel.ForAddress(endpoint);
+                using var channel = GrpcChannel.ForAddress(endpoint, channelOptions);
                 var client = new InventoryTelemetry.InventoryTelemetryClient(channel);
 
                 using var call = client.StreamInventoryUpdates(new StreamRequest(), cancellationToken: stoppingToken);
