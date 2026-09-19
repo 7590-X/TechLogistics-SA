@@ -1,25 +1,83 @@
 <div class="tl-nav">
-    <div class="tl-nav-brand">TechLogistics S.A.</div>
+    <div class="tl-nav-brand-container">
+        <div class="tl-nav-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
+                <path d="m3.3 7 8.7 5 8.7-5"></path>
+                <path d="M12 22V12"></path>
+            </svg>
+        </div>
+        <div class="tl-nav-brand">
+            TechLogistics
+            <span>Portal Logístico</span>
+        </div>
+    </div>
+
+    <div class="tl-nav-section-title">Navegación</div>
+
     <nav>
-        <NavLink href="/" Match="NavLinkMatch.All">Inicio</NavLink>
+        <NavLink href="/" Match="NavLinkMatch.All" class="tl-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Inicio</span>
+        </NavLink>
+
         <AuthorizeView Roles="GerenteBodega">
-            <NavLink href="/bodega/monitoreo">Monitoreo de Bodega</NavLink>
+            <NavLink href="/bodega/monitoreo" class="tl-nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <span>Monitoreo de Bodega</span>
+            </NavLink>
         </AuthorizeView>
+
         <AuthorizeView Roles="AgenteCampo">
-            <NavLink href="/despacho/escaneo">Escaneo de Despacho</NavLink>
+            <NavLink href="/despacho/escaneo" class="tl-nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <span>Escaneo de Despacho</span>
+            </NavLink>
         </AuthorizeView>
     </nav>
 
     <div class="tl-nav-user">
         <AuthorizeView>
             <Authorized>
-                <span class="tl-nav-username">@context.User.Identity?.Name</span>
-                <form method="post" action="/api/auth/logout">
-                    <button type="submit" class="tl-btn tl-btn-link">Cerrar sesión</button>
-                </form>
+                <div class="tl-user-card">
+                    <div class="tl-user-avatar">
+                        @(context.User.Identity?.Name?.Length > 0 ? context.User.Identity.Name.Substring(0, 1).ToUpper() : "U")
+                    </div>
+                    <div class="tl-user-info">
+                        <span class="tl-nav-username">@context.User.Identity?.Name</span>
+                        <form method="post" action="/api/auth/logout">
+                            <button type="submit" class="tl-btn-link">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </Authorized>
             <NotAuthorized>
-                <NavLink href="/login">Iniciar sesión</NavLink>
+                <NavLink href="/login" class="tl-nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    <span>Iniciar sesión</span>
+                </NavLink>
             </NotAuthorized>
         </AuthorizeView>
     </div>

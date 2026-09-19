@@ -2,40 +2,148 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "GerenteBodega")]
 @using TechLogistics.Web.Services
+@using TechLogistics.Shared.Enums
 @implements IDisposable
 @inject IAppStateContainer AppState
 @inject ITelemetryAggregator Telemetry
 
-<PageTitle>Monitoreo de Bodega</PageTitle>
+<PageTitle>Monitoreo de Bodega — TechLogistics</PageTitle>
 
-<h1>Panel de Monitoreo de Bodegas Principales</h1>
-<p class="tl-subtitle">
-    Render mode: <code>InteractiveServer</code>. Los cambios de inventario se reflejan
-    en vivo para todos los usuarios conectados al mismo circuito de servidor.
-    Acceso restringido al rol <strong>GerenteBodega</strong>.
-</p>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;">
+    <div>
+        <h1>Panel de Monitoreo de Bodegas</h1>
+        <p class="tl-subtitle" style="margin-bottom: 1rem;">
+            Modo: <code>InteractiveServer</code> (latencia &lt; 150 ms) · Datos sincronizados en vivo vía canal gRPC.
+        </p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 0.45rem 0.9rem; border-radius: 9999px; font-size: 0.8rem; color: #065f46; font-weight: 600;">
+        <span class="tl-live-dot"></span>
+        <span>Streaming de telemetría activo</span>
+    </div>
+</div>
 
-<PaginatedTable TItem="InventoryItem" Items="AppState.InventarioActual" PageSize="8">
+<!-- Tarjetas de Métricas en Tiempo Real (KPIs) -->
+<div class="tl-kpi-grid">
+    <div class="tl-kpi-card">
+        <div class="tl-kpi-header">
+            <span class="tl-kpi-title">Total SKUs</span>
+            <div class="tl-kpi-icon primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="tl-kpi-value">@AppState.InventarioActual.Count</div>
+        <div class="tl-kpi-footer">En 4 centros de distribución</div>
+    </div>
+
+    <div class="tl-kpi-card">
+        <div class="tl-kpi-header">
+            <span class="tl-kpi-title">Stock Óptimo</span>
+            <div class="tl-kpi-icon success">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="tl-kpi-value" style="color: #059669;">
+            @AppState.InventarioActual.Count(i => i.CalcularStatus() == InventoryStatus.Disponible)
+        </div>
+        <div class="tl-kpi-footer">Existencias sobre el umbral mínimo</div>
+    </div>
+
+    <div class="tl-kpi-card">
+        <div class="tl-kpi-header">
+            <span class="tl-kpi-title">Stock Crítico / Alerta</span>
+            <div class="tl-kpi-icon danger">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="tl-kpi-value" style="color: #dc2626;">
+            @AppState.InventarioActual.Count(i => i.CalcularStatus() == InventoryStatus.StockBajo || i.CalcularStatus() == InventoryStatus.Agotado)
+        </div>
+        <div class="tl-kpi-footer">Requiere reposición inmediata</div>
+    </div>
+
+    <div class="tl-kpi-card">
+        <div class="tl-kpi-header">
+            <span class="tl-kpi-title">Último Evento gRPC</span>
+            <div class="tl-kpi-icon warning">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="tl-kpi-value" style="font-size: 1.45rem;">
+            @(UltimaTelemetria != null ? UltimaTelemetria.Value.ToLocalTime().ToString("HH:mm:ss") : "--:--:--")
+        </div>
+        <div class="tl-kpi-footer">@(UltimoSkuActualizado ?? "Sin eventos aún")</div>
+    </div>
+</div>
+
+<!-- Barra de Búsqueda y Filtro Rápido -->
+<div style="margin-bottom: 1.25rem; display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+    <div style="position: relative; max-width: 360px; width: 100%;">
+        <input type="text"
+               placeholder="Buscar por SKU, nombre o centro..."
+               @bind="FiltroTexto"
+               @bind:event="oninput"
+               style="width: 100%; padding: 0.65rem 1rem 0.65rem 2.4rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; outline: none; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" />
+        <svg style="position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #94a3b8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(FiltroTexto))
+    {
+        <button class="tl-btn" style="padding: 0.4rem 0.75rem; font-size: 0.8rem;" @onclick="() => FiltroTexto = string.Empty">
+            Limpiar filtro
+        </button>
+    }
+</div>
+
+<!-- Tabla de Inventario Paginada -->
+<PaginatedTable TItem="InventoryItem" Items="ItemsFiltrados" PageSize="8">
     <HeaderTemplate>
         <th>SKU</th>
-        <th>Nombre</th>
-        <th>Centro</th>
+        <th>Nombre del Ítem</th>
+        <th>Centro Distribución</th>
         <th>Cantidad</th>
-        <th>Estado</th>
-        <th>Actualizado</th>
+        <th>Estado de Stock</th>
+        <th>Última Telemetría</th>
     </HeaderTemplate>
     <RowTemplate Context="item">
-        <td>@item.Sku</td>
-        <td>@item.Nombre</td>
+        <td style="font-family: var(--tl-mono); font-weight: 600; color: var(--tl-primary);">@item.Sku</td>
+        <td style="font-weight: 500;">@item.Nombre</td>
         <td>@item.CentroDistribucion</td>
-        <td>@item.Cantidad</td>
+        <td style="font-weight: 700;">@item.Cantidad</td>
         <td><InventoryStatusBadge Status="@item.CalcularStatus()" /></td>
-        <td>@item.UltimaActualizacion.ToLocalTime().ToString("HH:mm:ss")</td>
+        <td style="color: #64748b; font-size: 0.82rem;">
+            @item.UltimaActualizacion.ToLocalTime().ToString("HH:mm:ss")
+        </td>
     </RowTemplate>
 </PaginatedTable>
 
 @code {
     private static readonly string[] Centros = { "Guatemala", "San Salvador", "Tegucigalpa", "San José" };
+    private string FiltroTexto = string.Empty;
+    private DateTimeOffset? UltimaTelemetria;
+    private string? UltimoSkuActualizado;
+
+    private IEnumerable<InventoryItem> ItemsFiltrados =>
+        string.IsNullOrWhiteSpace(FiltroTexto)
+            ? AppState.InventarioActual
+            : AppState.InventarioActual.Where(i =>
+                i.Sku.Contains(FiltroTexto, StringComparison.OrdinalIgnoreCase) ||
+                i.Nombre.Contains(FiltroTexto, StringComparison.OrdinalIgnoreCase) ||
+                i.CentroDistribucion.Contains(FiltroTexto, StringComparison.OrdinalIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,6 +164,9 @@
         if (idx >= 0) lista[idx] = item; else lista.Add(item);
 
         AppState.ActualizarInventario(lista);
+        UltimaTelemetria = item.UltimaActualizacion;
+        UltimoSkuActualizado = $"Actualizado {item.Sku} ({item.Cantidad} u.)";
+
         InvokeAsync(StateHasChanged);
     }
 

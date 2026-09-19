@@ -3,6 +3,19 @@
 <div class="tl-shell">
     <NavMenu />
     <main class="tl-main">
+        <header class="tl-topbar">
+            <div class="tl-topbar-status">
+                <span class="tl-live-dot"></span>
+                <span>Telemetría gRPC en tiempo real</span>
+            </div>
+            <AuthorizeView>
+                <Authorized>
+                    <div style="font-size: 0.82rem; color: var(--tl-text-muted);">
+                        Sesión iniciada como: <strong style="color: var(--tl-text);">@context.User.Identity?.Name</strong>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </header>
         <article class="tl-content">
             @Body
         </article>

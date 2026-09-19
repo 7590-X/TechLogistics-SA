@@ -1,21 +1,67 @@
 @page "/"
 
-<PageTitle>TechLogistics — Portal Interactivo</PageTitle>
+<PageTitle>TechLogistics S.A. — Portal Interactivo</PageTitle>
 
-<h1>Portal Interactivo de Gestión Logística</h1>
-<p>
-    Bienvenido al núcleo de la nueva plataforma de TechLogistics S.A. Este portal combina
-    render modes intercalados según el perfil de uso de cada módulo:
-</p>
-<ul>
-    <li>
-        <strong>Monitoreo de Bodega</strong> — <code>InteractiveServer</code>: renderizado en
-        tiempo real desde el servidor, ideal para paneles con actualizaciones frecuentes
-        de telemetría (latencias de UI &lt; 150 ms).
-    </li>
-    <li>
-        <strong>Escaneo de Despacho</strong> — <code>InteractiveWebAssembly</code>: se ejecuta
-        íntegramente en el navegador del agente de campo, con persistencia local y
-        funcionamiento sin conexión.
-    </li>
-</ul>
+<div class="tl-hero-card">
+    <div class="tl-hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        Plataforma Logística Inteligente
+    </div>
+    <h1 class="tl-hero-title">Portal de Gestión de Inventarios & Telemetría</h1>
+    <p class="tl-hero-desc">
+        Arquitectura híbrida de alta disponibilidad sobre <strong>ASP.NET Core Blazor</strong> con Render Modes intercalados.
+        Supervisión de stock en tiempo real vía gRPC streaming y operaciones de campo con persistencia desconectada.
+    </p>
+</div>
+
+<h2>Módulos del Sistema</h2>
+
+<div class="tl-features-grid">
+    <div class="tl-feature-card">
+        <div>
+            <span class="tl-feature-badge tl-badge-server">InteractiveServer (SignalR)</span>
+            <h3 class="tl-feature-title">Monitoreo de Bodega</h3>
+            <p class="tl-feature-text">
+                Transmisión continua de inventario desde el cluster centralizado con latencias ultra bajas (&lt;150 ms).
+                Alertas automáticas de existencias críticas y visualización sincronizada.
+            </p>
+        </div>
+        <div>
+            <AuthorizeView Roles="GerenteBodega">
+                <Authorized>
+                    <a href="/bodega/monitoreo" class="tl-btn tl-btn-primary" style="text-decoration: none; width: 100%;">
+                        Abrir Panel de Monitoreo →
+                    </a>
+                </Authorized>
+                <NotAuthorized>
+                    <span style="font-size: 0.8rem; color: var(--tl-text-muted);">Requiere rol <strong>GerenteBodega</strong></span>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <div class="tl-feature-card">
+        <div>
+            <span class="tl-feature-badge tl-badge-wasm">InteractiveWebAssembly (WASM)</span>
+            <h3 class="tl-feature-title">Escaneo de Despacho</h3>
+            <p class="tl-feature-text">
+                Ejecución 100% en el navegador del agente de campo. Permite el registro de salidas con almacenamiento
+                local seguro y cola de sincronización automática al recuperar cobertura.
+            </p>
+        </div>
+        <div>
+            <AuthorizeView Roles="AgenteCampo">
+                <Authorized>
+                    <a href="/despacho/escaneo" class="tl-btn tl-btn-primary" style="text-decoration: none; width: 100%;">
+                        Abrir Escaneo de Campo →
+                    </a>
+                </Authorized>
+                <NotAuthorized>
+                    <span style="font-size: 0.8rem; color: var(--tl-text-muted);">Requiere rol <strong>AgenteCampo</strong></span>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+</div>

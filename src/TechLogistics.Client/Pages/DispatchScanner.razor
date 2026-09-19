@@ -11,44 +11,112 @@
 @inject ICatalogApiClient CatalogApi
 @inject AuthenticationStateProvider AuthState
 
-<PageTitle>Escaneo de Despacho</PageTitle>
+<PageTitle>Escaneo de Despacho — TechLogistics</PageTitle>
 
-<h1>Módulo de Escaneo de Despacho</h1>
-<p class="tl-subtitle">
-    Procesamiento 100% en el cliente (Blazor WebAssembly). Los registros se guardan
-    localmente y funcionan sin conexión a internet. Acceso restringido al rol
-    <strong>AgenteCampo</strong>.
-</p>
-
-<DispatchForm AgenteId="@AgenteIdActual" OnDespachoRegistrado="RegistrarDespachoLocal" />
+<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+        <h1>Módulo de Escaneo de Despacho</h1>
+        <p class="tl-subtitle" style="margin-bottom: 0;">
+            Modo: <code>InteractiveWebAssembly</code> · Procesamiento en cliente con persistencia local sin conexión.
+        </p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.5rem; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.45rem 0.9rem; border-radius: 9999px; font-size: 0.8rem; color: #1d4ed8; font-weight: 600;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path>
+            <line x1="8" y1="16" x2="8.01" y2="16"></line>
+            <line x1="8" y1="20" x2="8.01" y2="20"></line>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            <line x1="12" y1="22" x2="12.01" y2="22"></line>
+            <line x1="16" y1="16" x2="16.01" y2="16"></line>
+            <line x1="16" y1="20" x2="16.01" y2="20"></line>
+        </svg>
+        <span>Agente: <strong>@AgenteIdActual</strong></span>
+    </div>
+</div>
 
 @if (MensajeConfirmacion is not null)
 {
-    <p class="tl-confirm">@MensajeConfirmacion</p>
+    <div class="tl-confirm">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>@MensajeConfirmacion</span>
+    </div>
 }
 
-<h2>Despachos pendientes de sincronización</h2>
+<div class="tl-two-col">
+    <!-- Columna Izquierda: Formulario de Despacho -->
+    <div style="background: #ffffff; border: 1px solid var(--tl-border); border-radius: 14px; padding: 1.75rem; box-shadow: var(--tl-shadow-xs);">
+        <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1.25rem;">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">Registrar Salida</h3>
+                <span style="font-size: 0.75rem; color: #64748b;">Ingrese los datos de la carga</span>
+            </div>
+        </div>
 
-<button class="tl-btn tl-btn-primary" @onclick="SincronizarPendientes" disabled="@Sincronizando">
-    @(Sincronizando ? "Sincronizando..." : "Sincronizar ahora")
-</button>
+        <DispatchForm AgenteId="@AgenteIdActual" OnDespachoRegistrado="RegistrarDespachoLocal" />
+    </div>
 
-<PaginatedTable TItem="DispatchRequest" Items="Pendientes" PageSize="5">
-    <HeaderTemplate>
-        <th>SKU</th>
-        <th>Centro</th>
-        <th>Cantidad</th>
-        <th>Fecha</th>
-        <th>Sincronizado</th>
-    </HeaderTemplate>
-    <RowTemplate Context="despacho">
-        <td>@despacho.Sku</td>
-        <td>@despacho.CentroOrigen</td>
-        <td>@despacho.Cantidad</td>
-        <td>@despacho.FechaRegistro.ToLocalTime().ToString("g")</td>
-        <td>@(despacho.Sincronizado ? "Sí" : "Pendiente")</td>
-    </RowTemplate>
-</PaginatedTable>
+    <!-- Columna Derecha: Cola de Despachos y Sincronización -->
+    <div style="background: #ffffff; border: 1px solid var(--tl-border); border-radius: 14px; padding: 1.75rem; box-shadow: var(--tl-shadow-xs);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">Cola de Despachos</h3>
+                <span style="font-size: 0.75rem; color: #64748b;">
+                    @Pendientes.Count(p => !p.Sincronizado) pendientes de envío al servidor
+                </span>
+            </div>
+
+            <button class="tl-btn tl-btn-primary" @onclick="SincronizarPendientes" disabled="@Sincronizando">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                <span>@(Sincronizando ? "Sincronizando..." : "Sincronizar ahora")</span>
+            </button>
+        </div>
+
+        <PaginatedTable TItem="DispatchRequest" Items="Pendientes" PageSize="5">
+            <HeaderTemplate>
+                <th>SKU</th>
+                <th>Origen</th>
+                <th>Cantidad</th>
+                <th>Registro</th>
+                <th>Estado</th>
+            </HeaderTemplate>
+            <RowTemplate Context="despacho">
+                <td style="font-family: var(--tl-mono); font-weight: 600; color: var(--tl-primary);">@despacho.Sku</td>
+                <td>@despacho.CentroOrigen</td>
+                <td style="font-weight: 600;">@despacho.Cantidad</td>
+                <td style="color: #64748b; font-size: 0.8rem;">@despacho.FechaRegistro.ToLocalTime().ToString("g")</td>
+                <td>
+                    @if (despacho.Sincronizado)
+                    {
+                        <span class="tl-badge tl-badge-success">
+                            <span class="tl-badge-dot"></span>
+                            Sincronizado
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="tl-badge tl-badge-warning">
+                            <span class="tl-badge-dot"></span>
+                            Pendiente
+                        </span>
+                    }
+                </td>
+            </RowTemplate>
+        </PaginatedTable>
+    </div>
+</div>
 
 @code {
     private string AgenteIdActual { get; set; } = "AgenteCampo";
@@ -67,7 +135,7 @@
     {
         await LocalStore.GuardarAsync(despacho);
         Pendientes = await LocalStore.ObtenerPendientesAsync();
-        MensajeConfirmacion = $"Despacho de {despacho.Sku} registrado localmente. Se sincronizará al recuperar conexión.";
+        MensajeConfirmacion = $"Despacho de {despacho.Sku} ({despacho.Cantidad} u.) registrado localmente. Listo para sincronizar.";
     }
 
     private async Task SincronizarPendientes()
@@ -89,11 +157,11 @@
             }
 
             Pendientes = await LocalStore.ObtenerPendientesAsync();
-            MensajeConfirmacion = $"{procesados} despacho(s) sincronizados con el servidor.";
+            MensajeConfirmacion = $"Se sincronizaron con éxito {procesados} despacho(s) con el servidor.";
         }
         catch (Exception ex)
         {
-            MensajeConfirmacion = $"No se pudo sincronizar: {ex.Message}. Los datos permanecen guardados localmente.";
+            MensajeConfirmacion = $"No se pudo sincronizar: {ex.Message}. Los datos permanecen guardados en el almacenamiento local.";
         }
         finally
         {

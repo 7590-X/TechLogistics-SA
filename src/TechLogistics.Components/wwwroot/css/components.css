@@ -1,29 +1,286 @@
-.tl-table-wrapper { width: 100%; overflow-x: auto; }
-.tl-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.tl-table th, .tl-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
-.tl-table-empty { text-align: center; color: #64748b; padding: 1.5rem; }
-.tl-table-pager { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
-.tl-table-pager-info { font-size: 0.85rem; color: #475569; }
-.tl-btn { padding: 0.4rem 0.9rem; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; }
-.tl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.tl-btn-primary { background: #2563eb; color: #fff; border-color: #2563eb; }
-.tl-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
-.tl-badge-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.tl-badge-success { background: #dcfce7; color: #166534; }
-.tl-badge-success .tl-badge-dot { background: #16a34a; }
-.tl-badge-warning { background: #fef9c3; color: #854d0e; }
-.tl-badge-warning .tl-badge-dot { background: #ca8a04; }
-.tl-badge-danger { background: #fee2e2; color: #991b1b; }
-.tl-badge-danger .tl-badge-dot { background: #dc2626; }
-.tl-badge-info { background: #dbeafe; color: #1e40af; }
-.tl-badge-info .tl-badge-dot { background: #2563eb; }
-.tl-badge-neutral { background: #f1f5f9; color: #334155; }
-.tl-badge-neutral .tl-badge-dot { background: #64748b; }
-.tl-form { display: flex; flex-direction: column; gap: 0.85rem; max-width: 420px; }
-.tl-form-row { display: flex; flex-direction: column; gap: 0.25rem; }
-.tl-form-row label { font-size: 0.8rem; font-weight: 600; color: #334155; }
-.tl-form-row input, .tl-form-row select, .tl-form-row textarea {
-    padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;
+/* ==========================================================================
+   TechLogistics Design System — Reusable Components Styles
+   ========================================================================== */
+
+/* --- Tabla Paginada Moderna --- */
+.tl-table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
 }
-.tl-form-errors { color: #dc2626; font-size: 0.8rem; }
-.tl-form-actions { margin-top: 0.5rem; }
+
+.tl-table-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.tl-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tl-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.885rem;
+    text-align: left;
+}
+
+.tl-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.tl-table td {
+    padding: 0.95rem 1.1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    vertical-align: middle;
+    transition: background-color 0.15s ease;
+}
+
+.tl-table tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+.tl-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tl-table-empty {
+    text-align: center;
+    color: #64748b;
+    padding: 3rem 1.5rem !important;
+    font-size: 0.95rem;
+}
+
+.tl-table-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid #e2e8f0;
+    background: #fafafa;
+}
+
+.tl-table-pager-info {
+    font-size: 0.84rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* --- Botones --- */
+.tl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.86rem;
+    font-weight: 600;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.tl-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.tl-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.tl-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(40%);
+}
+
+.tl-btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+}
+
+.tl-btn-primary:hover:not(:disabled) {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+}
+
+.tl-btn-secondary {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+
+.tl-btn-secondary:hover:not(:disabled) {
+    background: #1e293b;
+    border-color: #1e293b;
+    color: #ffffff;
+}
+
+/* --- Insignias de Estado (Badges) con Efecto Pulse --- */
+.tl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.28rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease;
+}
+
+.tl-badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+}
+
+.tl-badge-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+.tl-badge-success .tl-badge-dot {
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.tl-badge-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+}
+.tl-badge-warning .tl-badge-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.tl-badge-danger {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+.tl-badge-danger .tl-badge-dot {
+    background: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+    animation: tl-pulse-danger 2s infinite;
+}
+
+.tl-badge-info {
+    background: #f0f9ff;
+    color: #075985;
+    border-color: #bae6fd;
+}
+.tl-badge-info .tl-badge-dot {
+    background: #0284c7;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.tl-badge-neutral {
+    background: #f8fafc;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+.tl-badge-neutral .tl-badge-dot {
+    background: #94a3b8;
+}
+
+@keyframes tl-pulse-danger {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* --- Formularios Modernos --- */
+.tl-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    width: 100%;
+}
+
+.tl-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.tl-form-row label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    letter-spacing: 0.01em;
+}
+
+.tl-form-row input,
+.tl-form-row select,
+.tl-form-row textarea {
+    padding: 0.65rem 0.9rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #0f172a;
+    background: #ffffff;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.tl-form-row input:focus,
+.tl-form-row select:focus,
+.tl-form-row textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.tl-form-row input::placeholder,
+.tl-form-row textarea::placeholder {
+    color: #94a3b8;
+}
+
+.tl-form-errors {
+    color: #ef4444;
+    font-size: 0.82rem;
+    background: #fef2f2;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    margin: 0;
+    list-style-position: inside;
+}
+
+.tl-form-actions {
+    margin-top: 0.75rem;
+}
