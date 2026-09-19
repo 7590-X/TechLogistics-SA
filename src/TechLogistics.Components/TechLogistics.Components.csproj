@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TechLogistics.Components</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <!-- FIX aplicado: una Razor Class Library (Sdk.Razor) NO trae por sí sola las APIs
+       de Blazor (Parameter, RenderFragment, EventCallback, EditForm, InputText, etc.).
+       Este único paquete las trae todas de forma transitiva: Microsoft.AspNetCore.Components
+       (base), Microsoft.AspNetCore.Components.Forms y Microsoft.JSInterop. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechLogistics.Shared\TechLogistics.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

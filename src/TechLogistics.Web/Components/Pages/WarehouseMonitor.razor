@@ -1,0 +1,86 @@
+@page "/bodega/monitoreo"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "GerenteBodega")]
+@using TechLogistics.Web.Services
+@implements IDisposable
+@inject IAppStateContainer AppState
+@inject ITelemetryAggregator Telemetry
+
+<PageTitle>Monitoreo de Bodega</PageTitle>
+
+<h1>Panel de Monitoreo de Bodegas Principales</h1>
+<p class="tl-subtitle">
+    Render mode: <code>InteractiveServer</code>. Los cambios de inventario se reflejan
+    en vivo para todos los usuarios conectados al mismo circuito de servidor.
+    Acceso restringido al rol <strong>GerenteBodega</strong>.
+</p>
+
+<PaginatedTable TItem="InventoryItem" Items="AppState.InventarioActual" PageSize="8">
+    <HeaderTemplate>
+        <th>SKU</th>
+        <th>Nombre</th>
+        <th>Centro</th>
+        <th>Cantidad</th>
+        <th>Estado</th>
+        <th>Actualizado</th>
+    </HeaderTemplate>
+    <RowTemplate Context="item">
+        <td>@item.Sku</td>
+        <td>@item.Nombre</td>
+        <td>@item.CentroDistribucion</td>
+        <td>@item.Cantidad</td>
+        <td><InventoryStatusBadge Status="@item.CalcularStatus()" /></td>
+        <td>@item.UltimaActualizacion.ToLocalTime().ToString("HH:mm:ss")</td>
+    </RowTemplate>
+</PaginatedTable>
+
+@code {
+    private static readonly string[] Centros = { "Guatemala", "San Salvador", "Tegucigalpa", "San José" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AppState.InicializarAsync();
+
+        if (AppState.InventarioActual.Count == 0)
+        {
+            AppState.ActualizarInventario(GenerarInventarioDemo());
+        }
+
+        Telemetry.InventarioActualizado += OnInventarioActualizado;
+    }
+
+    private void OnInventarioActualizado(InventoryItem item)
+    {
+        var lista = AppState.InventarioActual.ToList();
+        var idx = lista.FindIndex(i => i.Sku == item.Sku);
+        if (idx >= 0) lista[idx] = item; else lista.Add(item);
+
+        AppState.ActualizarInventario(lista);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private static List<InventoryItem> GenerarInventarioDemo()
+    {
+        var random = new Random();
+        var lista = new List<InventoryItem>();
+        for (var i = 1; i <= 24; i++)
+        {
+            var cantidad = random.Next(0, 200);
+            lista.Add(new InventoryItem
+            {
+                Sku = $"TL-{i:D5}",
+                Nombre = $"Ítem de catálogo {i}",
+                CentroDistribucion = Centros[i % Centros.Length],
+                Cantidad = cantidad,
+                CantidadMinima = 20,
+                UltimaActualizacion = DateTimeOffset.UtcNow
+            });
+        }
+        return lista;
+    }
+
+    public void Dispose()
+    {
+        Telemetry.InventarioActualizado -= OnInventarioActualizado;
+    }
+}

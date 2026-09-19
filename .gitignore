@@ -1,0 +1,27 @@
+## Compilación y paquetes
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+TestResults/
+
+## Visual Studio / Rider
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## Archivos del sistema
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log

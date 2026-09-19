@@ -1,0 +1,103 @@
+@page "/despacho/escaneo"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@attribute [Authorize(Roles = "AgenteCampo")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using TechLogistics.Components
+@using TechLogistics.Client.Services
+@using TechLogistics.Shared.Models
+@using TechLogistics.Shared.Services
+@inject ILocalDispatchStore LocalStore
+@inject ICatalogApiClient CatalogApi
+@inject AuthenticationStateProvider AuthState
+
+<PageTitle>Escaneo de Despacho</PageTitle>
+
+<h1>Módulo de Escaneo de Despacho</h1>
+<p class="tl-subtitle">
+    Procesamiento 100% en el cliente (Blazor WebAssembly). Los registros se guardan
+    localmente y funcionan sin conexión a internet. Acceso restringido al rol
+    <strong>AgenteCampo</strong>.
+</p>
+
+<DispatchForm AgenteId="@AgenteIdActual" OnDespachoRegistrado="RegistrarDespachoLocal" />
+
+@if (MensajeConfirmacion is not null)
+{
+    <p class="tl-confirm">@MensajeConfirmacion</p>
+}
+
+<h2>Despachos pendientes de sincronización</h2>
+
+<button class="tl-btn tl-btn-primary" @onclick="SincronizarPendientes" disabled="@Sincronizando">
+    @(Sincronizando ? "Sincronizando..." : "Sincronizar ahora")
+</button>
+
+<PaginatedTable TItem="DispatchRequest" Items="Pendientes" PageSize="5">
+    <HeaderTemplate>
+        <th>SKU</th>
+        <th>Centro</th>
+        <th>Cantidad</th>
+        <th>Fecha</th>
+        <th>Sincronizado</th>
+    </HeaderTemplate>
+    <RowTemplate Context="despacho">
+        <td>@despacho.Sku</td>
+        <td>@despacho.CentroOrigen</td>
+        <td>@despacho.Cantidad</td>
+        <td>@despacho.FechaRegistro.ToLocalTime().ToString("g")</td>
+        <td>@(despacho.Sincronizado ? "Sí" : "Pendiente")</td>
+    </RowTemplate>
+</PaginatedTable>
+
+@code {
+    private string AgenteIdActual { get; set; } = "AgenteCampo";
+    private List<DispatchRequest> Pendientes { get; set; } = new();
+    private string? MensajeConfirmacion;
+    private bool Sincronizando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        AgenteIdActual = authState.User.Identity?.Name ?? "AgenteCampo";
+        Pendientes = await LocalStore.ObtenerPendientesAsync();
+    }
+
+    private async Task RegistrarDespachoLocal(DispatchRequest despacho)
+    {
+        await LocalStore.GuardarAsync(despacho);
+        Pendientes = await LocalStore.ObtenerPendientesAsync();
+        MensajeConfirmacion = $"Despacho de {despacho.Sku} registrado localmente. Se sincronizará al recuperar conexión.";
+    }
+
+    private async Task SincronizarPendientes()
+    {
+        Sincronizando = true;
+        try
+        {
+            var pendientesReales = Pendientes.Where(p => !p.Sincronizado).ToList();
+            if (pendientesReales.Count == 0)
+            {
+                MensajeConfirmacion = "No hay despachos pendientes por sincronizar.";
+                return;
+            }
+
+            var procesados = await CatalogApi.SincronizarDespachosAsync(pendientesReales);
+            foreach (var despacho in pendientesReales)
+            {
+                await LocalStore.MarcarSincronizadoAsync(despacho.Id);
+            }
+
+            Pendientes = await LocalStore.ObtenerPendientesAsync();
+            MensajeConfirmacion = $"{procesados} despacho(s) sincronizados con el servidor.";
+        }
+        catch (Exception ex)
+        {
+            MensajeConfirmacion = $"No se pudo sincronizar: {ex.Message}. Los datos permanecen guardados localmente.";
+        }
+        finally
+        {
+            Sincronizando = false;
+        }
+    }
+}

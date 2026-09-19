@@ -1,0 +1,11 @@
+# Compilación y artefactos
+bin/
+obj/
+
+# Archivos de usuario e IDE
+*.user
+*.userosscache
+*.suo
+
+# Logs y temporales
+*.log

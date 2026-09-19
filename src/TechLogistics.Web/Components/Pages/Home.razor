@@ -1,0 +1,21 @@
+@page "/"
+
+<PageTitle>TechLogistics — Portal Interactivo</PageTitle>
+
+<h1>Portal Interactivo de Gestión Logística</h1>
+<p>
+    Bienvenido al núcleo de la nueva plataforma de TechLogistics S.A. Este portal combina
+    render modes intercalados según el perfil de uso de cada módulo:
+</p>
+<ul>
+    <li>
+        <strong>Monitoreo de Bodega</strong> — <code>InteractiveServer</code>: renderizado en
+        tiempo real desde el servidor, ideal para paneles con actualizaciones frecuentes
+        de telemetría (latencias de UI &lt; 150 ms).
+    </li>
+    <li>
+        <strong>Escaneo de Despacho</strong> — <code>InteractiveWebAssembly</code>: se ejecuta
+        íntegramente en el navegador del agente de campo, con persistencia local y
+        funcionamiento sin conexión.
+    </li>
+</ul>

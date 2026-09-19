@@ -1,0 +1,22 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; color: #0f172a; background: #f8fafc; }
+
+.tl-shell { display: flex; min-height: 100vh; }
+.tl-nav { width: 240px; background: #0f172a; color: #fff; padding: 1.25rem 1rem; }
+.tl-nav-brand { font-weight: 700; font-size: 1.1rem; margin-bottom: 1.5rem; }
+.tl-nav nav { display: flex; flex-direction: column; gap: 0.6rem; }
+.tl-nav nav a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; }
+.tl-nav nav a.active { color: #fff; font-weight: 600; }
+
+.tl-main { flex: 1; padding: 1.5rem 2rem; }
+.tl-content { max-width: 960px; margin: 0 auto; }
+.tl-subtitle { color: #475569; margin-top: -0.5rem; }
+.tl-confirm { color: #166534; background: #dcfce7; padding: 0.5rem 0.75rem; border-radius: 6px; }
+.tl-not-found { padding: 2rem; text-align: center; color: #64748b; }
+
+.tl-nav-user { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #1e293b; display: flex; flex-direction: column; gap: 0.5rem; }
+.tl-nav-username { color: #e2e8f0; font-size: 0.85rem; }
+.tl-btn-link { background: none; border: none; color: #93c5fd; padding: 0; cursor: pointer; text-decoration: underline; font-size: 0.85rem; }
+
+.tl-login-card { max-width: 380px; margin: 3rem auto; padding: 1.5rem; background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.tl-login-hint { font-size: 0.75rem; color: #64748b; margin-top: 1rem; }

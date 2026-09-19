@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "TechLogistics.Grpc";
+
+package telemetry;
+
+service InventoryTelemetry {
+  rpc StreamInventoryUpdates (StreamRequest) returns (stream InventoryUpdate);
+  rpc PublishUpdate (InventoryUpdate) returns (PublishAck);
+}
+
+message StreamRequest {
+  string centro_distribucion = 1;
+}
+
+message InventoryUpdate {
+  string sku = 1;
+  string nombre = 2;
+  string centro_distribucion = 3;
+  int32 cantidad = 4;
+  int32 cantidad_minima = 5;
+  int64 timestamp_unix_ms = 6;
+}
+
+message PublishAck {
+  bool aceptado = 1;
+  string mensaje = 2;
+}

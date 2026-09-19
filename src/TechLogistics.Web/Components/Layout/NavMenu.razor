@@ -1,0 +1,26 @@
+<div class="tl-nav">
+    <div class="tl-nav-brand">TechLogistics S.A.</div>
+    <nav>
+        <NavLink href="/" Match="NavLinkMatch.All">Inicio</NavLink>
+        <AuthorizeView Roles="GerenteBodega">
+            <NavLink href="/bodega/monitoreo">Monitoreo de Bodega</NavLink>
+        </AuthorizeView>
+        <AuthorizeView Roles="AgenteCampo">
+            <NavLink href="/despacho/escaneo">Escaneo de Despacho</NavLink>
+        </AuthorizeView>
+    </nav>
+
+    <div class="tl-nav-user">
+        <AuthorizeView>
+            <Authorized>
+                <span class="tl-nav-username">@context.User.Identity?.Name</span>
+                <form method="post" action="/api/auth/logout">
+                    <button type="submit" class="tl-btn tl-btn-link">Cerrar sesión</button>
+                </form>
+            </Authorized>
+            <NotAuthorized>
+                <NavLink href="/login">Iniciar sesión</NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>

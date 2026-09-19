@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TechLogistics.Shared</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Sin PackageReference: System.Net.Http.Json y System.ComponentModel.DataAnnotations
+       son ensamblados "inbox" del runtime .NET desde .NET 5, no requieren paquete NuGet
+       adicional en una librería de clases simple (Microsoft.NET.Sdk). -->
+
+</Project>

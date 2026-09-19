@@ -1,0 +1,15 @@
+# Compilación y artefactos
+bin/
+obj/
+
+# Archivos de usuario e IDE
+*.user
+*.userosscache
+*.suo
+
+# Archivos de configuración local
+appsettings.Development.json
+appsettings.*.local.json
+
+# Logs y temporales
+*.log

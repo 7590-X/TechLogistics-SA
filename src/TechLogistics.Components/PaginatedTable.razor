@@ -1,0 +1,33 @@
+@typeparam TItem
+@namespace TechLogistics.Components
+
+<div class="tl-table-wrapper">
+    <table class="tl-table">
+        <thead>
+            <tr>@HeaderTemplate</tr>
+        </thead>
+        <tbody>
+            @if (PagedItems.Count == 0)
+            {
+                <tr><td class="tl-table-empty" colspan="100">@EmptyText</td></tr>
+            }
+            else
+            {
+                @foreach (var item in PagedItems)
+                {
+                    <tr>@RowTemplate(item)</tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <div class="tl-table-pager">
+        <button class="tl-btn" disabled="@(CurrentPage == 1)" @onclick="() => GoToPage(CurrentPage - 1)">
+            ‹ Anterior
+        </button>
+        <span class="tl-table-pager-info">Página @CurrentPage de @TotalPages (@Items.Count() registros)</span>
+        <button class="tl-btn" disabled="@(CurrentPage == TotalPages || TotalPages == 0)" @onclick="() => GoToPage(CurrentPage + 1)">
+            Siguiente ›
+        </button>
+    </div>
+</div>

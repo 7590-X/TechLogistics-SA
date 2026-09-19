@@ -1,0 +1,36 @@
+@namespace TechLogistics.Components
+
+<span class="tl-badge tl-badge-@CssModifier" title="@Tooltip">
+    <span class="tl-badge-dot"></span>
+    @Label
+</span>
+
+@code {
+    [Parameter, EditorRequired]
+    public InventoryStatus Status { get; set; }
+
+    [Parameter]
+    public string? TextoPersonalizado { get; set; }
+
+    private string Label => TextoPersonalizado ?? Status switch
+    {
+        InventoryStatus.Disponible => "Disponible",
+        InventoryStatus.StockBajo => "Stock bajo",
+        InventoryStatus.Agotado => "Agotado",
+        InventoryStatus.EnTransito => "En tránsito",
+        InventoryStatus.Retenido => "Retenido",
+        _ => Status.ToString()
+    };
+
+    private string CssModifier => Status switch
+    {
+        InventoryStatus.Disponible => "success",
+        InventoryStatus.StockBajo => "warning",
+        InventoryStatus.Agotado => "danger",
+        InventoryStatus.EnTransito => "info",
+        InventoryStatus.Retenido => "neutral",
+        _ => "neutral"
+    };
+
+    private string Tooltip => $"Estado actual: {Label}";
+}

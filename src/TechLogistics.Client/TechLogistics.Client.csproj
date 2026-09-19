@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TechLogistics.Client</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.0" />
+    <!-- FIX aplicado: AddHttpClient<TClient,TImplementation>(...) es un método de extensión
+         de Microsoft.Extensions.Http (patrón IHttpClientFactory), NO viene incluido en
+         Microsoft.AspNetCore.Components.WebAssembly. -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechLogistics.Components\TechLogistics.Components.csproj" />
+    <ProjectReference Include="..\TechLogistics.Shared\TechLogistics.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

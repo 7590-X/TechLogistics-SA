@@ -1,0 +1,74 @@
+@namespace TechLogistics.Components
+
+<EditForm Model="@Modelo" OnValidSubmit="HandleValidSubmit" class="tl-form">
+    <DataAnnotationsValidator />
+
+    <div class="tl-form-row">
+        <label for="sku">SKU</label>
+        <InputText id="sku" @bind-Value="Modelo.Sku" placeholder="Ej. TL-00231" />
+    </div>
+
+    <div class="tl-form-row">
+        <label for="centro">Centro de distribución</label>
+        <InputSelect id="centro" @bind-Value="Modelo.CentroOrigen">
+            <option value="">-- Seleccione --</option>
+            @foreach (var centro in CentrosDisponibles)
+            {
+                <option value="@centro">@centro</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="tl-form-row">
+        <label for="cantidad">Cantidad a despachar</label>
+        <InputNumber id="cantidad" @bind-Value="Modelo.Cantidad" />
+    </div>
+
+    <div class="tl-form-row">
+        <label for="observaciones">Observaciones</label>
+        <InputTextArea id="observaciones" @bind-Value="Modelo.Observaciones" placeholder="Opcional" />
+    </div>
+
+    <ValidationSummary class="tl-form-errors" />
+
+    <div class="tl-form-actions">
+        <button type="submit" class="tl-btn tl-btn-primary" disabled="@EnEnvio">
+            @(EnEnvio ? "Guardando..." : "Registrar despacho")
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter, EditorRequired]
+    public string AgenteId { get; set; } = string.Empty;
+
+    [Parameter]
+    public IEnumerable<string> CentrosDisponibles { get; set; } =
+        new[] { "Guatemala", "San Salvador", "Tegucigalpa", "San José" };
+
+    [Parameter]
+    public EventCallback<DispatchRequest> OnDespachoRegistrado { get; set; }
+
+    private DispatchRequest Modelo { get; set; } = new();
+    private bool EnEnvio { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Modelo.AgenteId = AgenteId;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        EnEnvio = true;
+        try
+        {
+            Modelo.FechaRegistro = DateTimeOffset.UtcNow;
+            await OnDespachoRegistrado.InvokeAsync(Modelo);
+            Modelo = new DispatchRequest { AgenteId = AgenteId };
+        }
+        finally
+        {
+            EnEnvio = false;
+        }
+    }
+}

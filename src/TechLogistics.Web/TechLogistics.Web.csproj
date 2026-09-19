@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>TechLogistics.Web</RootNamespace>
+    <UserSecretsId>techlogistics-web-secrets</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.66.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.28.2" />
+    <PackageReference Include="Grpc.Tools" Version="2.66.0" PrivateAssets="all" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.2" />
+    <!-- FIX aplicado: AddInteractiveWebAssemblyComponents() / AddInteractiveWebAssemblyRenderMode()
+         NO forman parte del framework compartido Microsoft.AspNetCore.App; viven en este
+         paquete específico para servir/hospedar componentes WASM desde el servidor. -->
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\protos\telemetry.proto" GrpcServices="Client" Link="Protos\telemetry.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TechLogistics.Client\TechLogistics.Client.csproj" />
+    <ProjectReference Include="..\TechLogistics.Components\TechLogistics.Components.csproj" />
+    <ProjectReference Include="..\TechLogistics.Shared\TechLogistics.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
